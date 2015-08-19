@@ -1,5 +1,5 @@
 FROM java:8
-MAINTAINER William Durand <william.durand1@gmail.com>
+MAINTAINER Albert Yu <yukinying@gmail.com>
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -30,12 +30,14 @@ ADD etc/supervisor/conf.d/logstash.conf /etc/supervisor/conf.d/logstash.conf
 # Kibana
 RUN \
     curl -s https://download.elasticsearch.org/kibana/kibana/kibana-4.1.0-linux-x64.tar.gz | tar -C /opt -xz && \
-    ln -s /opt/kibana-4.1.0-linux-x64 /opt/kibana && \
-    sed -i 's/port: 5601/port: 80/' /opt/kibana/config/kibana.yml
-
+    ln -s /opt/kibana-4.1.0-linux-x64 /opt/kibana
+    
 ADD etc/supervisor/conf.d/kibana.conf /etc/supervisor/conf.d/kibana.conf
 
-EXPOSE 80
+EXPOSE 5601
+EXPOSE 5000
+
+ADD etc/logstash/11_tcp.conf /etc/logstash/11_tcp.conf
 
 CMD [ "/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf" ]
 

@@ -1,7 +1,15 @@
 Elasticsearch. Logstash. Kibana.
 ================================
 
-Github: https://github.com/yukinying/docker-elk
+Source [Github](https://github.com/yukinying/docker-elk)
+
+The intention of this repository from cloning https://github.com/willdurand/docker-elk are
+
+1. exposing 5000 as tcp with json_line codec
+2. use of latest ELK 
+
+
+// The following instruction are extracted and modified from https://github.com/willdurand/docker-elk 
 
 Creating an ELK stack could not be easier.
 
@@ -11,9 +19,12 @@ Quick Start
 -----------
 
 ```
-$ docker run -p 8080:80 \
+$ docker run -p 8080:5601 yukinying/elk
+    
+# OR 
+$ docker run -p 8080:5601 \
     -v /path/to/your/logstash/config:/etc/logstash \
-    willdurand/elk
+    yukinying/elk
 ```
 
 Then, browse: [http://localhost:8080](http://localhost:8080) (replace
@@ -21,16 +32,6 @@ Then, browse: [http://localhost:8080](http://localhost:8080) (replace
 
 Your logstash configuration directory MUST contain at least one logstash configuration file. If several files are found in the configuration directory, logstash will use all of them, concatenated in lexicographical order, as the configuration.
 
-### Compose Configuration
-
-``` yaml
-elk:
-    image: willdurand/elk
-    ports:
-        - "8080:80"
-    volumes:
-        - /path/to/your/logstash/config:/etc/logstash
-```
 
 
 Data
@@ -47,78 +48,9 @@ $ docker run -d -v /data --name dataelk busybox
 Then, use it:
 
 ```
-$ docker run -p 8080:80 \
-    -v /path/to/your/logstash/config:/etc/logstash \
+$ docker run -p 8080:5601 \
     --volumes-from dataelk \
-    willdurand/elk
-```
-
-If you want to rely on the logstash agent for processing files, you have to
-mount volumes as well, but you should rather only send logs to this container.
-
-### Compose Configuration
-
-``` yaml
-elk:
-    image: willdurand/elk
-    ports:
-        - "8080:80"
-    volumes:
-        - /path/to/your/logstash/config:/etc/logstash
-    volumes_from:
-        - dataelk
-
-dataelk:
-    image: busybox
-    volumes:
-        - /data
+    yukinying/elk
 ```
 
 
-Real Life Use Case
-------------------
-
-You can use this image to run an ELK stack that receives logs from your
-production servers, using [Logstash
-Forwarder](https://github.com/willdurand/docker-logstash-forwarder):
-
-``` yaml
-elk:
-    image: willdurand/elk
-    ports:
-        - "80:80"
-        - "XX.XX.XX.XX:5043:5043"
-    volumes:
-        - /path/to/your/ssl/files:/etc/ssl
-        - /path/to/your/logstash/config:/etc/logstash
-    volumes_from:
-        - dataelk
-
-dataelk:
-    image: busybox
-    volumes:
-        - /data
-```
-
-Note that the `5043` port is binded to a private IP address in this case, which
-is recommended. Kibana is publicly available though.
-
-Your `logstash` configuration SHOULD contain the following `input` definition:
-
-```
-input {
-  lumberjack {
-    port => 5043
-    ssl_certificate => "/etc/ssl/logstash-forwarder.crt"
-    ssl_key => "/etc/ssl/logstash-forwarder.key"
-  }
-}
-```
-
-
-Extend It
----------
-
-One of the Docker best practices is to avoid mapping a host folder to a
-container volume. Instead of specifying a volume, it is recommended to use this
-image as base image and configure your own image.
