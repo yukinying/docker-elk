@@ -31,13 +31,13 @@ ADD etc/supervisor/conf.d/logstash.conf /etc/supervisor/conf.d/logstash.conf
 RUN \
     curl -s https://download.elasticsearch.org/kibana/kibana/kibana-4.1.0-linux-x64.tar.gz | tar -C /opt -xz && \
     ln -s /opt/kibana-4.1.0-linux-x64 /opt/kibana
-    
+
 ADD etc/supervisor/conf.d/kibana.conf /etc/supervisor/conf.d/kibana.conf
 
 EXPOSE 5601
 EXPOSE 5000
 
-ADD etc/logstash/11_tcp.conf /etc/logstash/11_tcp.conf
+ADD etc/logstash/conf.d/11_tcp.conf /etc/logstash/conf.d/11_tcp.conf
 
 CMD [ "/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf" ]
 
