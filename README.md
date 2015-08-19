@@ -1,6 +1,8 @@
 Elasticsearch. Logstash. Kibana.
 ================================
 
+Github: https://github.com/yukinying/docker-elk
+
 Creating an ELK stack could not be easier.
 
 **Important:** this image embeds Kibana 4.1.0.
