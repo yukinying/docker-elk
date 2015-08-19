@@ -3,54 +3,58 @@ Elasticsearch. Logstash. Kibana.
 
 Source [Github](https://github.com/yukinying/docker-elk)
 
-The intention of this repository from cloning https://github.com/willdurand/docker-elk are
+This is a clone from https://github.com/willdurand/docker-elk, with the following modifications:
 
 1. exposing 5000 as tcp with json_line codec
 2. use of latest ELK 
 
 
-// The following instruction are extracted and modified from https://github.com/willdurand/docker-elk 
+## Quick Start
 
-Creating an ELK stack could not be easier.
+(Based on https://github.com/willdurand/docker-elk with modification)
 
-**Important:** this image embeds Kibana 4.1.0.
+### Ports:
+1. 5601: Kibana
+2. 5000: Logstash, TCP, JSON_LINE
 
-Quick Start
------------
-
+### Run 
 ```
-$ docker run -p 8080:5601 yukinying/elk
+$ docker run --name elk -p 8080:5601 -p 5000:5000 yukinying/elk
     
-# OR 
-$ docker run -p 8080:5601 \
+# OR with your own configs
+$ docker run --name elk -p 8080:5601 -p 5000:5000
     -v /path/to/your/logstash/config:/etc/logstash \
     yukinying/elk
 ```
 
-Then, browse: [http://localhost:8080](http://localhost:8080) (replace
-`localhost` with your public IP address).
+Then, browse: [http://localhost:8080](http://localhost:8080) 
 
-Your logstash configuration directory MUST contain at least one logstash configuration file. If several files are found in the configuration directory, logstash will use all of them, concatenated in lexicographical order, as the configuration.
+## Persistent Storage (mount /data)
 
-
-
-Data
-----
-
-Elasticsearch data are located in the `/data` folder. It is probably a good idea
-to mount a volume in order to preserve data integrity. You can create a _data
-only container_:
-
+1. Create your own volume container.
 ```
 $ docker run -d -v /data --name dataelk busybox
 ```
 
-Then, use it:
-
+2. Link the containers.
 ```
-$ docker run -p 8080:5601 \
+$ docker run --name elk -p 8080:5601 -p 5000:5000\
     --volumes-from dataelk \
     yukinying/elk
+```
+
+## Troubleshooting 
+
+Logs are stored in 
+
+- `/var/log/supervisor/`
+- `/var/log/logstash/`
+- `/var/log/elasticsearch/`
+
+To get the logs, run:
+```
+$ docker exec -it elk "/bin/bash"
+$ tail -f /var/log/supervisor/* /var/log/logstash/* /var/log/elasticsearch/*
 ```
 
 

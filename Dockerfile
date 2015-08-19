@@ -37,7 +37,7 @@ ADD etc/supervisor/conf.d/kibana.conf /etc/supervisor/conf.d/kibana.conf
 EXPOSE 5601
 EXPOSE 5000
 
-ADD etc/logstash/conf.d/tcp.conf /etc/logstash/conf.d/tcp.conf
+ADD etc/logstash/tcp.conf /etc/logstash/tcp.conf
 
 CMD [ "/usr/bin/supervisord", "-n", "-c", "/etc/supervisor/supervisord.conf" ]
 
